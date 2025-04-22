@@ -1,0 +1,185 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/light_beige"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="20dp">
+        <ImageView
+            android:id="@+id/imgReturn"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/arrow_down"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <ImageView
+            android:id="@+id/imgMenu"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/full_player_menu"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imgCover"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:src="@drawable/viber"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="60dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/txtTenBaiHat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tenbaihat"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
+                android:paddingStart="15dp"
+                android:ellipsize="end"/>
+            <TextView
+                android:id="@+id/txtTenCaSi"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/tencasi"
+                android:fontFamily="sans-serif"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
+                android:paddingStart="15dp"
+                android:ellipsize="end"/>
+        </LinearLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/add"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+        <SeekBar
+            android:id="@+id/sbMusicTimeBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="0"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="90dp"
+                android:layout_height="20dp"
+                android:paddingStart="15dp"
+                android:text="00-00"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <TextView
+                android:id="@+id/txtThoiGianKetThuc"
+                android:layout_width="90dp"
+                android:layout_height="20dp"
+                android:paddingStart="40dp"
+                android:text="00-00" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="16dp"
+        android:baselineAligned="false">
+
+        <!-- Ngoài cùng trái -->
+        <ImageView
+            android:id="@+id/btnShuffle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_shuffle"
+            android:layout_marginHorizontal="16dp"
+            android:scaleType="fitCenter" />
+
+        <!-- Gần giữa trái -->
+        <ImageView
+            android:id="@+id/btnPrevious"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_previous"
+            android:layout_marginHorizontal="16dp"
+            android:scaleType="fitCenter" />
+
+        <!-- Giữa (to nhất) -->
+        <ImageView
+            android:id="@+id/btnPause"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_pause"
+            android:layout_marginHorizontal="16dp"
+            android:scaleType="fitCenter" />
+
+        <!-- Gần giữa phải -->
+        <ImageView
+            android:id="@+id/btnNext"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_next"
+            android:layout_marginHorizontal="16dp"
+            android:scaleType="fitCenter" />
+
+        <!-- Ngoài cùng phải -->
+        <ImageView
+            android:id="@+id/btnRepeat"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_repeat"
+            android:layout_marginHorizontal="16dp"
+            android:scaleType="fitCenter" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="20dp">
+        <ImageView
+            android:id="@+id/btnShare"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/share"
+            android:scaleType="centerInside"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <ImageView
+            android:id="@+id/btnQueue"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_queue"
+            android:scaleType="centerInside"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,28 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="10dp">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/adBanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarSlider"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/adBanner"
+        app:layout_constraintStart_toStartOf="@+id/adBanner"
+        app:layout_constraintTop_toTopOf="@+id/adBanner"
+        android:visibility="gone"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

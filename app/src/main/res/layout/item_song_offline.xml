@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TableRow
+        android:id="@+id/tr_song"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="10dp">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:src="@drawable/viber"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tv_song"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Câu hẹn câu thề"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"/>
+
+    </TableRow>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E5E5E5" />
+</LinearLayout>

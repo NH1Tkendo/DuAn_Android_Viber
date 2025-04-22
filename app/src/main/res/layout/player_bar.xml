@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#F5F5DC"
+    android:padding="8dp"
+    android:id="@+id/playerBar"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <!-- Ảnh bài hát -->
+    <ImageView
+        android:id="@+id/imgSong"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/viber"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Tên bài hát và ca sĩ -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tvSongTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên bài hát"
+            android:textColor="#3E2723"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/tvArtist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên ca sĩ"
+            android:textColor="#8C6939"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <!-- Nút Thả tim -->
+    <ImageView
+        android:id="@+id/btnFavorite"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_favorite"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Nút Phát/Tạm dừng -->
+    <ImageView
+        android:id="@+id/btnPlayPause"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_pause"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Nút Tiếp theo -->
+    <ImageView
+        android:id="@+id/btnNext"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_next"/>
+</LinearLayout>

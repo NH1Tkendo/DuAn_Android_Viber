@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="#F5F5DC"
+    android:clickable="true"
+    android:focusable="true">
+    <ImageView
+        android:id="@+id/songCover"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/viber"/>
+    <LinearLayout
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="10dp">
+        <TextView
+            android:id="@+id/songTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên bài hát"
+            android:textSize="16sp"
+            android:textColor="#3E2723"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/songArtist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên nghệ sĩ"
+            android:textSize="14sp"
+            android:textColor="#8C6939"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/imgMenu"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/song_menu"/>
+</LinearLayout>
