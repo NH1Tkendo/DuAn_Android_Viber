@@ -1,9 +1,10 @@
 package com.Nhom1.viber.models;
 
+import com.google.firebase.Timestamp;
 import com.google.type.DateTime;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+
 import java.util.Date;
 
 public class Song implements Serializable {
@@ -14,7 +15,7 @@ public class Song implements Serializable {
     private int Duration;
     private int Likes;
     private int Plays;
-    private Date ReleaseDate;
+    private Timestamp ReleaseDate;
     public Song() {
 
     }
@@ -26,6 +27,10 @@ public class Song implements Serializable {
 
     public String getCover() {
         return Cover;
+    }
+
+    public void setCover(String cover) {
+        Cover = cover;
     }
 
     public String getTitle() {
@@ -49,7 +54,11 @@ public class Song implements Serializable {
         return Plays;
     }
 
-    public Date getReleaseDate() {
+    public Timestamp getReleaseDate() {
         return ReleaseDate;
+    }
+
+    public void setReleaseDate(Timestamp releaseDate) {
+        ReleaseDate = releaseDate;
     }
 }

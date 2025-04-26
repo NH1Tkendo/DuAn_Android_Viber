@@ -4,11 +4,11 @@ import android.util.Log;
 
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.models.User;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +57,9 @@ public class FirebaseService {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Song> songList = new ArrayList<>();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        Song song = document.toObject(Song.class);
+                        String cover = document.getString("Cover");
+                        Song song = new Song();
+                        song.setCover(cover);
                         songList.add(song);
                     }
                     callback.onCallback(songList); // Trả dữ liệu qua callback
