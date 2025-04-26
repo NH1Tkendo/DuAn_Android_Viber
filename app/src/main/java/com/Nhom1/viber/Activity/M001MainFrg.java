@@ -107,6 +107,7 @@ public class M001MainFrg extends Fragment {
 
     private void loadBanner() {
         hotHitSongBinding.progressBarSlider.setVisibility(View.VISIBLE);
+        long start = System.currentTimeMillis();
         bs.GetBannerSongs(songs -> {
             if (songs != null && !songs.isEmpty()) {
                 banners(songs); // Cập nhật dữ liệu
@@ -114,6 +115,8 @@ public class M001MainFrg extends Fragment {
                 Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
             }
             hotHitSongBinding.progressBarSlider.setVisibility(View.GONE);
+            long end = System.currentTimeMillis();
+            Log.d("🔥FirebaseTime", "Tải banner mất: " + (end - start) + "ms");
         });
     }
 
