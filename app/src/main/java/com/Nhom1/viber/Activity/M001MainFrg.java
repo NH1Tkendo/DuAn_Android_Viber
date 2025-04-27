@@ -11,11 +11,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import com.Nhom1.viber.R;
+import com.Nhom1.viber.adapters.PlayListAdapter;
 import com.Nhom1.viber.adapters.SliderAdapter;
 import com.Nhom1.viber.adapters.SongAdapter;
 import com.Nhom1.viber.databinding.HotHitSongBinding;
+import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.databinding.M001FrgMainBinding;
 import com.Nhom1.viber.utils.BusinessLogic;
@@ -30,7 +32,11 @@ public class M001MainFrg extends Fragment {
     private M001FrgMainBinding binding;
     private HotHitSongBinding hotHitSongBinding;
     private SongAdapter adapter;
+    private PlayListAdapter adapterPL;
+    private PlayListAdapter adapterGN;
     private final List<Song> songList = new ArrayList<>();
+    private final List<PlayList> playLists = new ArrayList<>();
+    private final List<PlayList> playListsGenre = new ArrayList<>();
     private final BusinessLogic bs = new BusinessLogic();
     private final Handler sliderHandler = new Handler(Looper.getMainLooper());
     private final Runnable sliderRunnable = new Runnable() {
@@ -57,37 +63,119 @@ public class M001MainFrg extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         hotHitSongBinding = binding.viewPagerContainer;
         // Cấu hình RecyclerView
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        GridLayoutManager songManager = new GridLayoutManager(
+                getContext(),
+                3, // số dòng muốn hiển thị
+                GridLayoutManager.HORIZONTAL, // cuộn ngang
+                false
+        );
+
+        GridLayoutManager playListManager = new GridLayoutManager(
+                getContext(),
+                1, // số dòng muốn hiển thị
+                GridLayoutManager.HORIZONTAL, // cuộn ngang
+                false
+        );
+
+        GridLayoutManager playListManager2 = new GridLayoutManager(
+                getContext(),
+                1, // số dòng muốn hiển thị
+                GridLayoutManager.HORIZONTAL, // cuộn ngang
+                false
+        );
+
+        binding.recyclerView.setLayoutManager(songManager);
         adapter = new SongAdapter(songList, this::onSongClick);
         binding.recyclerView.setAdapter(adapter);
+
+        binding.rvArtistPlaylist.setLayoutManager(playListManager);
+        adapterPL = new PlayListAdapter(playLists, this::onPlayListClick);
+        binding.rvArtistPlaylist.setAdapter(adapterPL);
+
+        binding.rvGenresPlaylist.setLayoutManager(playListManager2);
+        adapterGN = new PlayListAdapter(playListsGenre, this::onPlayListClick);
+        binding.rvGenresPlaylist.setAdapter(adapterGN);
         //------------------------------------------------------------------------
         // Khởi tạo FirebaseService
-        new Thread(this::loadSongs).start();
+        loadSongs();
         loadBanner();
+        loadPlayListArtist();
+        loadPlayListGenres();
         //------------------------------------------------------------------------
     }
     //==============================================
     //=============Xử lý chức năng =================
+    private void onPlayListClick(PlayList playList){
+        if(playList != null){
+            List<String> songIds = playList.getSongs();
+            String playListName = playList.getName();
+
+            bs.GetPlayListDetails(songIds, detailedSong -> {
+                if (detailedSong == null) {
+                    Log.e("onSongClick", "Không lấy được chi tiết bài hát");
+                    return;
+                }
+                PlayListDetailFrg fragment = PlayListDetailFrg.newInstance(new ArrayList<>(detailedSong));
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .addToBackStack(null) // để back lại được
+                        .commit();
+            });
+        }
+    }
     private void onSongClick(Song song) {
         if (song == null) return;
-        //Xoa mini player cu truoc khi goi miniplayer moi
-        MiniPlayerFragment currentFragment = (MiniPlayerFragment) getChildFragmentManager().findFragmentById(R.id.playerBarContainer);
-        if (currentFragment != null) {
-            getChildFragmentManager().beginTransaction()
-                    .remove(currentFragment)
-                    .commitNow();
-        }
-        //================================================
-        MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.playerBarContainer, miniPlayerFragment)
-                .commitNow();
 
-        miniPlayerFragment.updatePlayer(song, requireContext());
-        binding.playerBarContainer.setVisibility(View.VISIBLE);
+        // Gọi lấy chi tiết bài hát từ Firestore
+        bs.GetSongDetail(song.getId(), detailedSong -> {  // giả sử bạn có getSongDetail(String songId, Callback)
+            if (detailedSong == null) {
+                Log.e("onSongClick", "Không lấy được chi tiết bài hát");
+                return;
+            }
+
+            // Xóa mini player cũ trước
+            MiniPlayerFragment currentFragment = (MiniPlayerFragment) getChildFragmentManager().findFragmentById(R.id.playerBarContainer);
+            if (currentFragment != null) {
+                getChildFragmentManager().beginTransaction()
+                        .remove(currentFragment)
+                        .commitNow();
+            }
+
+            // Gọi mini player mới
+            MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.playerBarContainer, miniPlayerFragment)
+                    .commitNow();
+
+            // Truyền bài hát đã có đầy đủ dữ liệu vào
+            miniPlayerFragment.updatePlayer(detailedSong, requireContext());
+            binding.playerBarContainer.setVisibility(View.VISIBLE);
+        });
     }
     //=============================================
     //=============Xử lý giao diện =================
+    private void loadPlayListArtist(){
+        bs.GetPlayListArtist(listResult ->{
+            if(listResult != null && !listResult.isEmpty()){
+                playLists.clear();
+                playLists.addAll(listResult);
+                adapterPL.notifyDataSetChanged();
+            }else
+                Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
+        });
+    }
+
+    private void loadPlayListGenres(){
+        bs.GetPlayListGenres(listResult ->{
+            if(listResult != null && !listResult.isEmpty()){
+                playListsGenre.clear();
+                playListsGenre.addAll(listResult);
+                adapterGN.notifyDataSetChanged();
+            }else
+                Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
+        });
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private void loadSongs() {
         binding.progressBarMusic.setVisibility(View.VISIBLE);

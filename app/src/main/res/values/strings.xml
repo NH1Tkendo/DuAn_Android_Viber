@@ -26,4 +26,7 @@
     <string name="hot_music_playlist">Nhạc hot thịnh hành</string>
     <string name="tenbaihat">Tên bài hát</string>
     <string name="tencasi">Tên ca sĩ</string>
+    <string name="playlist_theo_ca_s">Playlist theo ca sĩ</string>
+    <string name="playlist_theo_th_lo_i">Playlist theo thể loại</string>
+    <string name="playlist_name">Playlist_Name</string>
 </resources>
