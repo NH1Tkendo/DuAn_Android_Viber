@@ -25,11 +25,11 @@ public class FirebaseService {
         List<Song> songList = new ArrayList<>();
         // Tên collection trong Firestore
         String COLLECTION_NAME = "songs";
-        double randomFloat = Math.random() * 2;
+        double randomFloat = Math.random();
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo("random", randomFloat)
+                .whereGreaterThanOrEqualTo("random", 0.1)
                 .orderBy("random")
-                .limit(10)
+                .limit(20)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
