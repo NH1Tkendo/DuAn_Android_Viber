@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import com.Nhom1.viber.R;
 import com.Nhom1.viber.adapters.PlayListAdapter;
@@ -108,17 +111,16 @@ public class M001MainFrg extends Fragment {
     private void onPlayListClick(PlayList playList){
         if(playList != null){
             List<String> songIds = playList.getSongs();
-            String playListName = playList.getName();
-
+            String playListCover = playList.getCover();
             bs.GetPlayListDetails(songIds, detailedSong -> {
                 if (detailedSong == null) {
                     Log.e("onSongClick", "Không lấy được chi tiết bài hát");
                     return;
                 }
-                PlayListDetailFrg fragment = PlayListDetailFrg.newInstance(new ArrayList<>(detailedSong));
+                PlayListDetailFrg fragment = PlayListDetailFrg.newInstance(new ArrayList<>(detailedSong), playListCover);
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.frame_container, fragment)
-                        .addToBackStack(null) // để back lại được
+                        .addToBackStack(null)
                         .commit();
             });
         }
@@ -126,32 +128,37 @@ public class M001MainFrg extends Fragment {
     private void onSongClick(Song song) {
         if (song == null) return;
 
-        // Gọi lấy chi tiết bài hát từ Firestore
-        bs.GetSongDetail(song.getId(), detailedSong -> {  // giả sử bạn có getSongDetail(String songId, Callback)
+        bs.GetSongDetail(song.getId(), detailedSong -> {
             if (detailedSong == null) {
                 Log.e("onSongClick", "Không lấy được chi tiết bài hát");
                 return;
             }
 
-            // Xóa mini player cũ trước
-            MiniPlayerFragment currentFragment = (MiniPlayerFragment) getChildFragmentManager().findFragmentById(R.id.playerBarContainer);
-            if (currentFragment != null) {
-                getChildFragmentManager().beginTransaction()
-                        .remove(currentFragment)
+            FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
+            if (playerBar != null) {
+                playerBar.setVisibility(View.VISIBLE);
+
+                // Xóa mini player cũ nếu có
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                MiniPlayerFragment currentFragment = (MiniPlayerFragment) fragmentManager.findFragmentById(R.id.playerBarContainer);
+                if (currentFragment != null) {
+                    fragmentManager.beginTransaction()
+                            .remove(currentFragment)
+                            .commitNow();
+                }
+
+                // Gọi mini player mới
+                MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.playerBarContainer, miniPlayerFragment)
                         .commitNow();
+
+                // Truyền bài hát đã có đầy đủ dữ liệu vào miniPlayerFragment
+                miniPlayerFragment.updatePlayer(detailedSong, requireContext());
             }
-
-            // Gọi mini player mới
-            MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
-            getChildFragmentManager().beginTransaction()
-                    .replace(R.id.playerBarContainer, miniPlayerFragment)
-                    .commitNow();
-
-            // Truyền bài hát đã có đầy đủ dữ liệu vào
-            miniPlayerFragment.updatePlayer(detailedSong, requireContext());
-            binding.playerBarContainer.setVisibility(View.VISIBLE);
         });
     }
+
     //=============================================
     //=============Xử lý giao diện =================
     private void loadPlayListArtist(){
