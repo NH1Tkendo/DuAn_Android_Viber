@@ -64,9 +64,74 @@
             android:text="Chỉnh sửa hồ sơ"
             android:textColor="#FFFFFF"
             android:backgroundTint="#3F51B5"
-            android:paddingHorizontal="24dp"/>
+            android:paddingHorizontal="24dp"
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Danh sách chức năng mở rộng -->
+        <!-- Nút Thông báo và Đăng xuất -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/btn_notifications"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔔 Thông báo"
+                android:backgroundTint="#E0E0E0"
+                android:textColor="#000000"
+                android:layout_marginEnd="16dp"/>
+
+            <Button
+                android:id="@+id/btn_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🚪 Đăng xuất"
+                android:backgroundTint="#FF5252"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <!-- Mục bài hát yêu thích -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="❤️ Bài hát yêu thích"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Danh sách bài hát yêu thích -->
+        <LinearLayout
+            android:id="@+id/favorite_songs_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Mỗi bài hát sẽ là một TextView hoặc View động -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎵 Bài hát 1 - Ca sĩ A"
+                android:padding="8dp"
+                android:background="#F8F8F8"
+                android:layout_marginBottom="4dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎵 Bài hát 2 - Ca sĩ B"
+                android:padding="8dp"
+                android:background="#F8F8F8"
+                android:layout_marginBottom="4dp"
+                android:textColor="#000000" />
+
+            <!-- Có thể thêm nhiều bài khác ở đây -->
+        </LinearLayout>
+
+        <!-- Trải nghiệm nâng cao -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"

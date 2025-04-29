@@ -1,31 +1,46 @@
 package com.Nhom1.viber.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.Nhom1.viber.R;
-
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 public class M004UserFrg extends Fragment {
+    FirebaseAuth mAuth;
+    private Button btnLogout;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.m004_frg_user, container, false);
-        initView(v);
-        return v;
+        View view = inflater.inflate(R.layout.m004_frg_user, container, false);
+        initView(view);
+
+        btnLogout = view.findViewById(R.id.btn_logout);
+        btnLogout.setOnClickListener(v -> {
+            BottomNavigationView nav = requireActivity().findViewById(R.id.bottom_navigation);
+            if (nav != null) nav.setVisibility(View.GONE);
+            // Đăng xuất khỏi Firebase
+            FirebaseAuth.getInstance().signOut();
+            // Chuyển sang Fragment đăng nhập (LoginFrg)
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.frame_container, new LoginFrg()); // fragment_container là ID của FrameLayout chứa các Fragment
+            transaction.commit();
+        });
+        return view;
     }
 
     private void initView(View v){
 
     }
-    /*private void logout() {
-        FirebaseAuth.getInstance().signOut();
-        startActivity(new Intent(this, LoginActivity.class)); // Quay về màn hình đăng nhập
-        finish();
-    }*/
 }
