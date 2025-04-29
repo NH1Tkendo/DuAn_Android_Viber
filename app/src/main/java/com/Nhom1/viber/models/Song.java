@@ -17,6 +17,7 @@ public class Song implements Serializable {
     private int Likes;
     private int Plays;
     private Timestamp ReleaseDate;
+    private Float random;
     public Song() {
 
     }
@@ -92,5 +93,13 @@ public class Song implements Serializable {
 
     public void setReleaseDate(Timestamp releaseDate) {
         ReleaseDate = releaseDate;
+    }
+
+    public Float getRandom() {
+        return random;
+    }
+
+    public void setRandom(Float random) {
+        this.random = random;
     }
 }

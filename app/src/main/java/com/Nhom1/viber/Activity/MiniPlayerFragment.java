@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -80,11 +81,12 @@ public class MiniPlayerFragment extends Fragment {
 
         binding.playerBar.setOnClickListener(v -> {
             BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
-            bottomNavigationView.setVisibility(View.GONE);
+            FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
+
+            if (bottomNavigationView != null) bottomNavigationView.setVisibility(View.GONE);
+            if (playerBar != null) playerBar.setVisibility(View.GONE);
 
             FullPlayerFragment fullPlayerFragment = new FullPlayerFragment();
-
-            // Truyền dữ liệu bài hát bằng Bundle
             Bundle bundle = new Bundle();
             bundle.putSerializable("song", currentSong);
             fullPlayerFragment.setArguments(bundle);
@@ -98,10 +100,11 @@ public class MiniPlayerFragment extends Fragment {
                             R.anim.fade_in,
                             R.anim.slide_down
                     )
-                    .add(R.id.mainScreen, fullPlayerFragment)
+                    .replace(R.id.frame_container, fullPlayerFragment)
                     .addToBackStack(null)
                     .commit();
         });
+
 
         return binding.getRoot();
     }

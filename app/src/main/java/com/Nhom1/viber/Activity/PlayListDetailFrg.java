@@ -6,10 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -20,21 +22,27 @@ import com.Nhom1.viber.databinding.M001FrgMainBinding;
 import com.Nhom1.viber.databinding.PlaylistDetailsBinding;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.utils.BusinessLogic;
+import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayListDetailFrg extends Fragment {
     private static final String ARG_SONGS = "arg_songs";
+    private static final String ARG_COVER = "arg_cover";
+
     private PlaylistDetailsBinding binding;
     private SongAdapter adapter;
     private List<Song> songList;
+    private String playListCover;
     private final BusinessLogic bs = new BusinessLogic();
 
-    public static PlayListDetailFrg newInstance(ArrayList<Song> songs) {
+    public static PlayListDetailFrg newInstance(ArrayList<Song> songs, String cover) {
         PlayListDetailFrg fragment = new PlayListDetailFrg();
         Bundle args = new Bundle();
         args.putSerializable(ARG_SONGS, songs); // Song phải Serializable
+        args.putString(ARG_COVER, cover);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,6 +52,7 @@ public class PlayListDetailFrg extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             songList = (ArrayList<Song>) getArguments().getSerializable(ARG_SONGS);
+            playListCover = getArguments().getString(ARG_COVER);
         }
     }
 
@@ -56,38 +65,53 @@ public class PlayListDetailFrg extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        Glide.with(requireContext())
+                .load(playListCover)
+                .placeholder(R.drawable.viber)
+                .error(R.drawable.viber)
+                .into(binding.imgCover);
+
         binding.rvSongHolder.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new SongAdapter(songList, this::onSongClick);
         binding.rvSongHolder.setAdapter(adapter);
+
+        binding.imgReturn.setOnClickListener(v -> {
+            getParentFragmentManager().popBackStack();
+        });
 
     }
 
     private void onSongClick(Song song) {
         if (song == null) return;
 
-        // Gọi lấy chi tiết bài hát từ Firestore
-        bs.GetSongDetail(song.getId(), detailedSong -> {  // giả sử bạn có getSongDetail(String songId, Callback)
+        bs.GetSongDetail(song.getId(), detailedSong -> {
             if (detailedSong == null) {
                 Log.e("onSongClick", "Không lấy được chi tiết bài hát");
                 return;
             }
 
-            // Xóa mini player cũ trước
-            MiniPlayerFragment currentFragment = (MiniPlayerFragment) getChildFragmentManager().findFragmentById(R.id.playerBarContainer);
-            if (currentFragment != null) {
-                getChildFragmentManager().beginTransaction()
-                        .remove(currentFragment)
+            FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
+            if (playerBar != null) {
+                playerBar.setVisibility(View.VISIBLE);
+
+                // Xóa mini player cũ nếu có
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                MiniPlayerFragment currentFragment = (MiniPlayerFragment) fragmentManager.findFragmentById(R.id.playerBarContainer);
+                if (currentFragment != null) {
+                    fragmentManager.beginTransaction()
+                            .remove(currentFragment)
+                            .commitNow();
+                }
+
+                // Gọi mini player mới
+                MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.playerBarContainer, miniPlayerFragment)
                         .commitNow();
+
+                // Truyền bài hát đã có đầy đủ dữ liệu vào miniPlayerFragment
+                miniPlayerFragment.updatePlayer(detailedSong, requireContext());
             }
-
-            // Gọi mini player mới
-            MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
-            getChildFragmentManager().beginTransaction()
-                    .replace(R.id.playerBarContainer, miniPlayerFragment)
-                    .commitNow();
-
-            // Truyền bài hát đã có đầy đủ dữ liệu vào
-            miniPlayerFragment.updatePlayer(detailedSong, requireContext());
         });
     }
 }

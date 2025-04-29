@@ -25,11 +25,16 @@ public class FirebaseService {
         List<Song> songList = new ArrayList<>();
         // Tên collection trong Firestore
         String COLLECTION_NAME = "songs";
+        double randomFloat = Math.random() * 2;
         db.collection(COLLECTION_NAME)
+                .whereGreaterThanOrEqualTo("random", randomFloat)
+                .orderBy("random")
+                .limit(10)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.e("f", "ad" + task.getResult());
                             String artist = document.getString("Artist");
                             String title = document.getString("Title");
                             String cover = document.getString("Cover");

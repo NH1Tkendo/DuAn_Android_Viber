@@ -7,11 +7,13 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
@@ -71,8 +73,6 @@ public class FullPlayerFragment extends Fragment {
 
         binding.imgReturn.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
-            BottomNavigationView nav = requireActivity().findViewById(R.id.bottom_navigation);
-            nav.setVisibility(View.VISIBLE);
         });
         //Đồng bộ seekbar với player
         binding.sbMusicTimeBar.setMax((int) player.getDuration() / 1000); // set tối đa = tổng thời lượng (giây)
@@ -154,6 +154,11 @@ public class FullPlayerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacks(updateSeekbar);
-        binding = null;
+
+        BottomNavigationView nav = requireActivity().findViewById(R.id.bottom_navigation);
+        FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
+        if (nav != null) nav.setVisibility(View.VISIBLE);
+        if (playerBar != null) playerBar.setVisibility(View.VISIBLE);
+
     }
 }
