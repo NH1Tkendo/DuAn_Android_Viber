@@ -13,7 +13,6 @@ import android.widget.SeekBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
@@ -56,19 +55,15 @@ public class FullPlayerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FullPlayerBinding.inflate(inflater, container, false);
 
-        if (getArguments() != null) {
-            currentSong = (Song) getArguments().getSerializable("song");
-        }
-
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        if (currentSong != null && getContext() != null) {
-            updateFullPlayer(currentSong, requireContext());
+        PlayerManage manager = PlayerManage.getInstance(requireContext());
+        if (manager.getCurrentSong() != null && getContext() != null) {
+            updateFullPlayer(requireContext());
         }
 
         binding.imgReturn.setOnClickListener(v -> {
@@ -96,7 +91,6 @@ public class FullPlayerFragment extends Fragment {
             }
         });
         //===========================
-        PlayerManage manager = PlayerManage.getInstance(requireContext());
         if (player != null) {
             boolean isPlaying = player.isPlaying();
             binding.btnPause.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
@@ -111,6 +105,16 @@ public class FullPlayerFragment extends Fragment {
                 binding.btnPause.setImageResource(R.drawable.ic_pause);
             }
         });
+
+        binding.btnPrevious.setOnClickListener(v -> {
+            manager.playPrevious(requireContext());
+            updateFullPlayer(requireContext());
+        });
+
+        binding.btnNext.setOnClickListener(v -> {
+            manager.playNext(requireContext());
+            updateFullPlayer(requireContext());
+        });
     }
 
     @SuppressLint("DefaultLocale")
@@ -120,19 +124,19 @@ public class FullPlayerFragment extends Fragment {
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    public void updateFullPlayer(Song song, Context context){
-        currentSong = song;
+    public void updateFullPlayer(Context context){
         if (binding == null || context == null) return;
 
         PlayerManage manager = PlayerManage.getInstance(requireContext());
+        Song current = manager.getCurrentSong();
         player = manager.getPlayer();
 
-        String endTime = formatTime(currentSong.getDuration());
-        binding.txtTenBaiHat.setText(currentSong.getTitle());
-        binding.txtTenCaSi.setText(currentSong.getArtist());
+        String endTime = formatTime(current.getDuration());
+        binding.txtTenBaiHat.setText(current.getTitle());
+        binding.txtTenCaSi.setText(current.getArtist());
         binding.txtThoiGianKetThuc.setText(endTime);
         Glide.with(context)
-                .load(currentSong.getCover())
+                .load(current.getCover())
                 .placeholder(R.drawable.viber)
                 .error(R.drawable.viber)
                 .into(binding.imgCover);

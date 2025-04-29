@@ -21,13 +21,13 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
+
+
 public class MiniPlayerFragment extends Fragment {
     private ExoPlayer player;
     private PlayerBarBinding binding;
-    private Song currentSong;
     private boolean isFavorite = false;
-
-    private Player.Listener playerListener = new Player.Listener() {
+    private final Player.Listener playerListener = new Player.Listener() {
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
             if (binding != null) {
@@ -38,23 +38,21 @@ public class MiniPlayerFragment extends Fragment {
         }
     };
 
-    public void updatePlayer(Song song, Context context) {
-        this.currentSong = song;
+    public void updatePlayer(Context context) {
         if (binding == null || context == null) return;
 
         PlayerManage manager = PlayerManage.getInstance(requireContext());
+        Song current = manager.getCurrentSong();
         player = manager.getPlayer();
+        if (current == null) return;
 
-
-        binding.tvSongTitle.setText(song.getTitle());
-        binding.tvArtist.setText(song.getArtist());
+        binding.tvSongTitle.setText(current.getTitle());
+        binding.tvArtist.setText(current.getArtist());
         Glide.with(context)
-                .load(song.getCover())
+                .load(current.getCover())
                 .placeholder(R.drawable.viber)
                 .error(R.drawable.viber)
                 .into(binding.imgSong);
-
-        manager.play(song, context);
     }
 
     @Nullable
@@ -79,6 +77,10 @@ public class MiniPlayerFragment extends Fragment {
             }
         });
 
+        binding.btnNext.setOnClickListener(v -> {
+            PlayerManage.getInstance(requireContext()).playNext(requireContext());
+            updatePlayer(requireContext());
+        });
         binding.playerBar.setOnClickListener(v -> {
             BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
             FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
@@ -88,7 +90,7 @@ public class MiniPlayerFragment extends Fragment {
 
             FullPlayerFragment fullPlayerFragment = new FullPlayerFragment();
             Bundle bundle = new Bundle();
-            bundle.putSerializable("song", currentSong);
+            bundle.putSerializable("song", manager.getCurrentSong());
             fullPlayerFragment.setArguments(bundle);
 
             requireActivity()

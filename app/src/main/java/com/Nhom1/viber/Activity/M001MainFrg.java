@@ -15,7 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.Nhom1.viber.R;
+import com.Nhom1.viber.Singleton.PlayerManage;
 import com.Nhom1.viber.adapters.PlayListAdapter;
 import com.Nhom1.viber.adapters.SliderAdapter;
 import com.Nhom1.viber.adapters.SongAdapter;
@@ -24,11 +26,15 @@ import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.databinding.M001FrgMainBinding;
 import com.Nhom1.viber.utils.BusinessLogic;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class M001MainFrg extends Fragment {
@@ -38,6 +44,7 @@ public class M001MainFrg extends Fragment {
     private PlayListAdapter adapterPL;
     private PlayListAdapter adapterGN;
     private final List<Song> songList = new ArrayList<>();
+    private List<Song> randomSongs = new ArrayList<>();
     private final List<PlayList> playLists = new ArrayList<>();
     private final List<PlayList> playListsGenre = new ArrayList<>();
     private final BusinessLogic bs = new BusinessLogic();
@@ -65,6 +72,14 @@ public class M001MainFrg extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         hotHitSongBinding = binding.viewPagerContainer;
+
+        requireActivity().getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            Fragment currentFragment = requireActivity().getSupportFragmentManager().findFragmentById(R.id.playerBarContainer);
+            if (currentFragment instanceof MiniPlayerFragment) {
+                ((MiniPlayerFragment) currentFragment).updatePlayer(requireContext());
+            }
+        });
+
         // Cấu hình RecyclerView
         GridLayoutManager songManager = new GridLayoutManager(
                 getContext(),
@@ -88,7 +103,7 @@ public class M001MainFrg extends Fragment {
         );
 
         binding.recyclerView.setLayoutManager(songManager);
-        adapter = new SongAdapter(songList, this::onSongClick);
+        adapter = new SongAdapter(randomSongs, this::onSongClick);
         binding.recyclerView.setAdapter(adapter);
 
         binding.rvArtistPlaylist.setLayoutManager(playListManager);
@@ -106,10 +121,11 @@ public class M001MainFrg extends Fragment {
         loadPlayListGenres();
         //------------------------------------------------------------------------
     }
+
     //==============================================
     //=============Xử lý chức năng =================
-    private void onPlayListClick(PlayList playList){
-        if(playList != null){
+    private void onPlayListClick(PlayList playList) {
+        if (playList != null) {
             List<String> songIds = playList.getSongs();
             String playListCover = playList.getCover();
             bs.GetPlayListDetails(songIds, detailedSong -> {
@@ -125,60 +141,62 @@ public class M001MainFrg extends Fragment {
             });
         }
     }
+
     private void onSongClick(Song song) {
         if (song == null) return;
+        Collections.shuffle(songList);
+        ArrayList<Song> subListCopy = new ArrayList<>(songList.subList(0, 10));
 
-        bs.GetSongDetail(song.getId(), detailedSong -> {
-            if (detailedSong == null) {
-                Log.e("onSongClick", "Không lấy được chi tiết bài hát");
-                return;
-            }
+        PlayerManage manager = PlayerManage.getInstance(requireContext());
+        manager.setQueue(subListCopy);
+        manager.setCurrentSong(song);
+        manager.setCurrentIndex(-1);
 
-            FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
-            if (playerBar != null) {
-                playerBar.setVisibility(View.VISIBLE);
+        FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
+        if (playerBar != null) {
+            playerBar.setVisibility(View.VISIBLE);
 
-                // Xóa mini player cũ nếu có
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                MiniPlayerFragment currentFragment = (MiniPlayerFragment) fragmentManager.findFragmentById(R.id.playerBarContainer);
-                if (currentFragment != null) {
-                    fragmentManager.beginTransaction()
-                            .remove(currentFragment)
-                            .commitNow();
-                }
-
-                // Gọi mini player mới
-                MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
+            // Xóa mini player cũ nếu có
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            MiniPlayerFragment currentFragment = (MiniPlayerFragment) fragmentManager.findFragmentById(R.id.playerBarContainer);
+            if (currentFragment != null) {
                 fragmentManager.beginTransaction()
-                        .replace(R.id.playerBarContainer, miniPlayerFragment)
+                        .remove(currentFragment)
                         .commitNow();
-
-                // Truyền bài hát đã có đầy đủ dữ liệu vào miniPlayerFragment
-                miniPlayerFragment.updatePlayer(detailedSong, requireContext());
             }
-        });
+
+            // Gọi mini player mới
+            MiniPlayerFragment miniPlayerFragment = new MiniPlayerFragment();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.playerBarContainer, miniPlayerFragment)
+                    .commitNow();
+
+            // Truyền bài hát đã có đầy đủ dữ liệu vào miniPlayerFragment
+            miniPlayerFragment.updatePlayer(requireContext());
+            manager.playCurrent(requireContext());
+        }
     }
 
     //=============================================
     //=============Xử lý giao diện =================
-    private void loadPlayListArtist(){
-        bs.GetPlayListArtist(listResult ->{
-            if(listResult != null && !listResult.isEmpty()){
+    private void loadPlayListArtist() {
+        bs.GetPlayListArtist(listResult -> {
+            if (listResult != null && !listResult.isEmpty()) {
                 playLists.clear();
                 playLists.addAll(listResult);
                 adapterPL.notifyDataSetChanged();
-            }else
+            } else
                 Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
         });
     }
 
-    private void loadPlayListGenres(){
-        bs.GetPlayListGenres(listResult ->{
-            if(listResult != null && !listResult.isEmpty()){
+    private void loadPlayListGenres() {
+        bs.GetPlayListGenres(listResult -> {
+            if (listResult != null && !listResult.isEmpty()) {
                 playListsGenre.clear();
                 playListsGenre.addAll(listResult);
                 adapterGN.notifyDataSetChanged();
-            }else
+            } else
                 Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
         });
     }
@@ -190,7 +208,10 @@ public class M001MainFrg extends Fragment {
         bs.GetListSong(songListResult -> {
             if (songListResult != null && !songListResult.isEmpty()) {
                 songList.clear();
+                randomSongs.clear();
                 songList.addAll(songListResult);
+                Collections.shuffle(songList);
+                randomSongs.addAll(songList.subList(0, 10));
                 adapter.notifyDataSetChanged();
             } else {
                 Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
@@ -261,16 +282,19 @@ public class M001MainFrg extends Fragment {
         });
 
     }
+
     @Override
     public void onResume() {
         super.onResume();
         sliderHandler.post(sliderRunnable); // Bắt đầu tự động chạy ViewPager khi Fragment hiển thị
     }
+
     @Override
     public void onPause() {
         super.onPause();
         sliderHandler.removeCallbacks(sliderRunnable); // Dừng Runnable khi Fragment không hiển thị
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

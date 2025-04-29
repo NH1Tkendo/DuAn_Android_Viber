@@ -110,7 +110,7 @@ public class PlayListDetailFrg extends Fragment {
                         .commitNow();
 
                 // Truyền bài hát đã có đầy đủ dữ liệu vào miniPlayerFragment
-                miniPlayerFragment.updatePlayer(detailedSong, requireContext());
+                miniPlayerFragment.updatePlayer(requireContext());
             }
         });
     }
