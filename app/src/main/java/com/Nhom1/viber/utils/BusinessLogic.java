@@ -35,4 +35,12 @@ public class BusinessLogic {
     public void GetPlayListDetails(List<String> songIds, FirebaseService.OnSongsLoadedListener loaded){
         firebaseService.loadPlayListDetails(songIds, loaded);
     }
+
+    public void GetPlayListEvent(FirebaseService.OnPlaylistsLoadedListener pl){
+        firebaseService.getPlayListEvent(pl);
+    }
+
+    public void SearchKeyWord(String s, boolean isnewsearch, FirebaseService.OnSongsLoadedListener listener){
+        firebaseService.searchSongs(s, isnewsearch, listener);
+    }
 }

@@ -9,13 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
-
 import com.Nhom1.viber.R;
 import com.Nhom1.viber.Singleton.PlayerManage;
 import com.Nhom1.viber.adapters.PlayListAdapter;
@@ -26,13 +24,12 @@ import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.databinding.M001FrgMainBinding;
 import com.Nhom1.viber.utils.BusinessLogic;
+import com.Nhom1.viber.utils.ControlUI;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,12 +38,12 @@ public class M001MainFrg extends Fragment {
     private M001FrgMainBinding binding;
     private HotHitSongBinding hotHitSongBinding;
     private SongAdapter adapter;
-    private PlayListAdapter adapterPL;
-    private PlayListAdapter adapterGN;
+    private PlayListAdapter adapterPL, adapterGN, adapterET;
     private final List<Song> songList = new ArrayList<>();
-    private List<Song> randomSongs = new ArrayList<>();
+    private final List<Song> randomSongs = new ArrayList<>();
     private final List<PlayList> playLists = new ArrayList<>();
     private final List<PlayList> playListsGenre = new ArrayList<>();
+    private final List<PlayList> playListsEvent = new ArrayList<>();
     private final BusinessLogic bs = new BusinessLogic();
     private final Handler sliderHandler = new Handler(Looper.getMainLooper());
     private final Runnable sliderRunnable = new Runnable() {
@@ -74,9 +71,16 @@ public class M001MainFrg extends Fragment {
         hotHitSongBinding = binding.viewPagerContainer;
 
         requireActivity().getSupportFragmentManager().addOnBackStackChangedListener(() -> {
-            Fragment currentFragment = requireActivity().getSupportFragmentManager().findFragmentById(R.id.playerBarContainer);
-            if (currentFragment instanceof MiniPlayerFragment) {
-                ((MiniPlayerFragment) currentFragment).updatePlayer(requireContext());
+            Fragment current = requireActivity().getSupportFragmentManager().findFragmentById(R.id.frame_container);
+            if (current instanceof FullPlayerFragment || current instanceof MusicQueueFrg) {
+                ((ControlUI) requireActivity()).hidePlayerUI();
+            } else {
+                ((ControlUI) requireActivity()).showPlayerUI();
+            }
+
+            Fragment miniPlayer = requireActivity().getSupportFragmentManager().findFragmentById(R.id.playerBarContainer);
+            if (miniPlayer instanceof MiniPlayerFragment) {
+                ((MiniPlayerFragment) miniPlayer).updatePlayer(requireContext());
             }
         });
 
@@ -102,6 +106,13 @@ public class M001MainFrg extends Fragment {
                 false
         );
 
+        GridLayoutManager playListManager3 = new GridLayoutManager(
+                getContext(),
+                1, // số dòng muốn hiển thị
+                GridLayoutManager.HORIZONTAL, // cuộn ngang
+                false
+        );
+
         binding.recyclerView.setLayoutManager(songManager);
         adapter = new SongAdapter(randomSongs, this::onSongClick);
         binding.recyclerView.setAdapter(adapter);
@@ -113,13 +124,25 @@ public class M001MainFrg extends Fragment {
         binding.rvGenresPlaylist.setLayoutManager(playListManager2);
         adapterGN = new PlayListAdapter(playListsGenre, this::onPlayListClick);
         binding.rvGenresPlaylist.setAdapter(adapterGN);
+
+        binding.rvEventPlaylist.setLayoutManager(playListManager3);
+        adapterET = new PlayListAdapter(playListsEvent, this::onPlayListClick);
+        binding.rvEventPlaylist.setAdapter(adapterET);
         //------------------------------------------------------------------------
         // Khởi tạo FirebaseService
         loadSongs();
         loadBanner();
         loadPlayListArtist();
         loadPlayListGenres();
+        loadPlayListEvent();
         //------------------------------------------------------------------------
+        binding.ivSearch.setOnClickListener(v -> {
+            SearchScreenFrg searchScreenFrg = new SearchScreenFrg();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.frame_container, searchScreenFrg)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     //==============================================
@@ -179,6 +202,16 @@ public class M001MainFrg extends Fragment {
 
     //=============================================
     //=============Xử lý giao diện =================
+    private void loadPlayListEvent() {
+        bs.GetPlayListEvent(listResult -> {
+            if (listResult != null && !listResult.isEmpty()) {
+                playListsEvent.clear();
+                playListsEvent.addAll(listResult);
+                adapterET.notifyDataSetChanged();
+            } else
+                Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");
+        });
+    }
     private void loadPlayListArtist() {
         bs.GetPlayListArtist(listResult -> {
             if (listResult != null && !listResult.isEmpty()) {
@@ -211,7 +244,7 @@ public class M001MainFrg extends Fragment {
                 randomSongs.clear();
                 songList.addAll(songListResult);
                 Collections.shuffle(songList);
-                randomSongs.addAll(songList.subList(0, 10));
+                randomSongs.addAll(songList.subList(0, 9));
                 adapter.notifyDataSetChanged();
             } else {
                 Log.e("LoadSongs", "Danh sách bài hát rỗng hoặc null");

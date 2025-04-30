@@ -1,6 +1,7 @@
 package com.Nhom1.viber.Activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,13 +21,14 @@ import com.Nhom1.viber.R;
 import com.Nhom1.viber.Singleton.PlayerManage;
 import com.Nhom1.viber.databinding.FullPlayerBinding;
 import com.Nhom1.viber.models.Song;
+import com.Nhom1.viber.utils.ControlUI;
+import com.Nhom1.viber.utils.NavigateToFullPlayer;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class FullPlayerFragment extends Fragment {
     private FullPlayerBinding binding;
     private ExoPlayer player;
-    private Song currentSong;
     private final Handler handler = new Handler();
     private final Runnable updateSeekbar = new Runnable() {
         @Override
@@ -115,6 +117,13 @@ public class FullPlayerFragment extends Fragment {
             manager.playNext(requireContext());
             updateFullPlayer(requireContext());
         });
+
+        binding.btnQueue.setOnClickListener(v -> {
+            Activity activity = getActivity();
+            if (activity instanceof NavigateToFullPlayer) {
+                ((NavigateToFullPlayer) activity).openMusicQueue();
+            }
+        });
     }
 
     @SuppressLint("DefaultLocale")
@@ -158,11 +167,5 @@ public class FullPlayerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacks(updateSeekbar);
-
-        BottomNavigationView nav = requireActivity().findViewById(R.id.bottom_navigation);
-        FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
-        if (nav != null) nav.setVisibility(View.VISIBLE);
-        if (playerBar != null) playerBar.setVisibility(View.VISIBLE);
-
     }
 }

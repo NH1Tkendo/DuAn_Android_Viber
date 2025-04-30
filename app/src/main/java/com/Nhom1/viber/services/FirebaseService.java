@@ -5,7 +5,6 @@ import android.util.Log;
 import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.models.User;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -16,6 +15,7 @@ import java.util.List;
 
 public class FirebaseService {
     private final FirebaseFirestore db;
+    private DocumentSnapshot lastVisible = null;
 
     public FirebaseService() {
         db = FirebaseFirestore.getInstance();
@@ -27,14 +27,13 @@ public class FirebaseService {
         String COLLECTION_NAME = "songs";
         double randomFloat = Math.random();
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo("random", 0.1)
+                .whereGreaterThanOrEqualTo("random", randomFloat)
                 .orderBy("random")
-                .limit(20)
+                .limit(30)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.e("f", "ad" + task.getResult());
                             String artist = document.getString("Artist");
                             String title = document.getString("Title");
                             String cover = document.getString("Cover");
@@ -47,6 +46,7 @@ public class FirebaseService {
                             song.setCover(cover);
 
                             songList.add(song);
+                            Log.e("đá", "da" + songList.size());
                         }
                         listener.onSongsLoaded(songList);
                     } else {
@@ -151,6 +151,29 @@ public class FirebaseService {
                 });
     }
 
+    public void getPlayListEvent(OnPlaylistsLoadedListener listener) {
+        List<PlayList> pls = new ArrayList<>();
+        db.collection("playlists")
+                .whereGreaterThanOrEqualTo(FieldPath.documentId(), "Event")
+                .whereLessThan(FieldPath.documentId(), "Event~")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        List<String> ids = (List<String>) doc.get("Songs");
+                        String name = doc.getString("Name");
+                        String cover = doc.getString("Cover");
+
+                        PlayList pl = new PlayList(name, cover, ids);
+                        pls.add(pl);
+                    }
+                    listener.onPlaylistsLoaded(pls); // Chỉ gọi callback sau khi đã load xong!
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Lỗi truy vấn playlists", e);
+                    listener.onPlaylistsLoaded(null); // Báo lỗi bằng cách trả null
+                });
+    }
+
     public void loadPlayListDetails(List<String> songIds, OnSongsLoadedListener listener){
         List<List<String>> partitions = partitionList(songIds, 10);
         List<Song> allSongs = new ArrayList<>();
@@ -188,10 +211,45 @@ public class FirebaseService {
 
     private List<List<String>> partitionList(List<String> list, int size) {
         List<List<String>> partitions = new ArrayList<>();
-        for (int i = 0; i < list.size(); i += size) {
-            partitions.add(list.subList(i, Math.min(i + size, list.size())));
+        for (int i = 0; i < list.size(); i += 10) {
+            partitions.add(list.subList(i, Math.min(i + 10, list.size())));
         }
         return partitions;
+    }
+    public void searchSongs(String keyword, boolean isNewSearch, OnSongsLoadedListener listener) {
+        if (isNewSearch) lastVisible = null; // reset khi bắt đầu tìm kiếm mới
+
+        String lowercaseKeyword = keyword.toLowerCase();
+        Query query = db.collection("songs")
+                .orderBy("title_lower")
+                .startAt(lowercaseKeyword)
+                .endAt(lowercaseKeyword + "\uf8ff")
+                .limit(20);
+
+        if (lastVisible != null) {
+            query = query.startAfter(lastVisible);
+        }
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Song> songList = new ArrayList<>();
+                List<DocumentSnapshot> docs = task.getResult().getDocuments();
+
+                for (DocumentSnapshot doc : docs) {
+                    Song song = doc.toObject(Song.class);
+                    song.setId(doc.getId());
+                    songList.add(song);
+                }
+
+                if (!docs.isEmpty()) {
+                    lastVisible = docs.get(docs.size() - 1); // cập nhật cho phân trang
+                }
+
+                listener.onSongsLoaded(songList);
+            } else {
+                listener.onSongsLoaded(null);
+            }
+        });
     }
 
     public interface OnSongsLoadedListener {

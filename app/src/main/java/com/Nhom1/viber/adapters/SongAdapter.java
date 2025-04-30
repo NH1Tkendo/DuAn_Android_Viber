@@ -13,10 +13,11 @@ import com.Nhom1.viber.R;
 import com.Nhom1.viber.models.Song;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder> {
-    private final List<Song> songList;
+    private List<Song> songList;
     private final OnSongClickListener listener;
 
     public interface OnSongClickListener {
@@ -28,6 +29,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         this.listener = listener;
     }
 
+    public void setData(List<Song> data) {
+        this.songList = new ArrayList<>(data); // hoặc this.songList.clear(); this.songList.addAll(data);
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

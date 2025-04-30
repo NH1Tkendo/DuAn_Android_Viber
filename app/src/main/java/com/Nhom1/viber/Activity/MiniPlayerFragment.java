@@ -1,7 +1,9 @@
 package com.Nhom1.viber.Activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import com.Nhom1.viber.R;
 import com.Nhom1.viber.Singleton.PlayerManage;
 import com.Nhom1.viber.databinding.PlayerBarBinding;
 import com.Nhom1.viber.models.Song;
+import com.Nhom1.viber.utils.ControlUI;
+import com.Nhom1.viber.utils.NavigateToFullPlayer;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -82,31 +86,11 @@ public class MiniPlayerFragment extends Fragment {
             updatePlayer(requireContext());
         });
         binding.playerBar.setOnClickListener(v -> {
-            BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
-            FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
-
-            if (bottomNavigationView != null) bottomNavigationView.setVisibility(View.GONE);
-            if (playerBar != null) playerBar.setVisibility(View.GONE);
-
-            FullPlayerFragment fullPlayerFragment = new FullPlayerFragment();
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("song", manager.getCurrentSong());
-            fullPlayerFragment.setArguments(bundle);
-
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(
-                            R.anim.slide_up,
-                            R.anim.fade_out,
-                            R.anim.fade_in,
-                            R.anim.slide_down
-                    )
-                    .replace(R.id.frame_container, fullPlayerFragment)
-                    .addToBackStack(null)
-                    .commit();
+            Activity activity = getActivity();
+            if (activity instanceof NavigateToFullPlayer) {
+                ((NavigateToFullPlayer) activity).openFullPlayer();
+            }
         });
-
 
         return binding.getRoot();
     }
