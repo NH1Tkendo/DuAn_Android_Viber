@@ -43,6 +43,10 @@ public class PlayerManage {
         return instance;
     }
 
+    public ArrayList<Song> getQueue() {
+        return queue;
+    }
+
     public ExoPlayer getPlayer() {
         return player;
     }

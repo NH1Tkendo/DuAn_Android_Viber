@@ -29,4 +29,6 @@
     <string name="playlist_theo_ca_s">Playlist theo ca sĩ</string>
     <string name="playlist_theo_th_lo_i">Playlist theo thể loại</string>
     <string name="playlist_name">Playlist_Name</string>
+    <string name="danh_s_ch_b_i_h_t">Danh sách bài hát</string>
+    <string name="c_c_s_ki_n_n_i_b_t">Các sự kiện nổi bật</string>
 </resources>
