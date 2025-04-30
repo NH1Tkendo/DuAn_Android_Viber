@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ public class M004UserFrg extends Fragment {
     FirebaseAuth mAuth;
     private Button btnLogout, btnSetting;
     private TextView tvAccountSetting, tvNotificationSetting;
+    private ImageButton btnBack;
 
     @Nullable
     @Override
@@ -27,6 +29,11 @@ public class M004UserFrg extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.m004_frg_user, container, false);
         initView(view);
+
+        // Sự kiện quay lại
+        btnBack.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager().popBackStack()
+        );
 
         // Sự kiện đăng xuất
         btnLogout.setOnClickListener(v -> {
@@ -54,5 +61,6 @@ public class M004UserFrg extends Fragment {
     private void initView(View v) {
         btnLogout = v.findViewById(R.id.btn_logout);
         btnSetting = v.findViewById(R.id.btn_setting);
+        btnBack = v.findViewById(R.id.btn_back); // Gán nút quay lại
     }
 }

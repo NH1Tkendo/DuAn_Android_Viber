@@ -1,4 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
@@ -9,14 +11,34 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <TextView
+        <!-- Thanh tiêu đề với nút quay lại -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cài đặt tài khoản"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#1976D2"
-            android:paddingBottom="16dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Quay lại"
+                android:src="@drawable/ic_back"
+                app:tint="#3F51B5"
+                tools:ignore="TouchTargetSizeCheck" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cài đặt tài khoản"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#1976D2"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
 
         <!-- Avatar và nút chỉnh sửa -->
         <LinearLayout
@@ -59,7 +81,7 @@
             android:id="@+id/tvUserName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nguyễn Văn A"
+            android:text="Nguyễn Hồ Đức Huy"
             android:textSize="16sp"
             android:textColor="#424242"
             android:paddingBottom="16dp" />
