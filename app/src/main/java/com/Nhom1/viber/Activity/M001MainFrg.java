@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -137,7 +139,11 @@ public class M001MainFrg extends Fragment {
         loadPlayListEvent();
         //------------------------------------------------------------------------
         binding.ivSearch.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("song_list", (Serializable)songList);
+
             SearchScreenFrg searchScreenFrg = new SearchScreenFrg();
+            searchScreenFrg.setArguments(bundle);
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.frame_container, searchScreenFrg)
                     .addToBackStack(null)

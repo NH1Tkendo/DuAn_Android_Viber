@@ -43,4 +43,12 @@ public class BusinessLogic {
     public void SearchKeyWord(String s, boolean isnewsearch, FirebaseService.OnSongsLoadedListener listener){
         firebaseService.searchSongs(s, isnewsearch, listener);
     }
+
+    public void Increase(String id){
+        firebaseService.incrementSongPlays(id);
+    }
+
+    public void GetDataSet(int limit, FirebaseService.OnSongsLoadedListener listener){
+        firebaseService.getTopSongs(limit, listener);
+    }
 }
