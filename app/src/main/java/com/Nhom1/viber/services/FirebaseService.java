@@ -5,8 +5,10 @@ import android.util.Log;
 import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.models.User;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -27,7 +29,7 @@ public class FirebaseService {
         String COLLECTION_NAME = "songs";
         double randomFloat = Math.random();
         db.collection(COLLECTION_NAME)
-                .whereGreaterThanOrEqualTo("random", randomFloat)
+                .whereGreaterThanOrEqualTo("random", 0)
                 .orderBy("random")
                 .limit(30)
                 .get()
@@ -250,6 +252,51 @@ public class FirebaseService {
                 listener.onSongsLoaded(null);
             }
         });
+    }
+
+    public void incrementSongPlays(String songId) {
+        if (songId == null || songId.isEmpty()) return;
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference songRef = db.collection("songs").document(songId);
+
+        songRef.update("Plays", FieldValue.increment(1))
+                .addOnSuccessListener(aVoid -> Log.d("UpdatePlay", "Tăng lượt plays thành công cho bài: " + songId))
+                .addOnFailureListener(e -> Log.e("UpdatePlay", "Lỗi khi tăng lượt plays", e));
+    }
+
+
+    public void getTopSongs(int limit, OnSongsLoadedListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("songs")
+                .orderBy("Plays", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Song> topSongs = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String artist = document.getString("Artist");
+                        String title = document.getString("Title");
+                        String cover = document.getString("Cover");
+                        int plays = document.getLong("Plays").intValue();
+                        String songId = document.getId();
+
+                        Song song = new Song();
+                        song.setArtist(artist);
+                        song.setTitle(title);
+                        song.setId(songId);
+                        song.setCover(cover);
+                        song.setPlays(plays);
+
+                        topSongs.add(song);
+                    }
+                    listener.onSongsLoaded(topSongs);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Lỗi lấy top bài hát", e);
+                    listener.onSongsLoaded(null);
+                });
     }
 
     public interface OnSongsLoadedListener {

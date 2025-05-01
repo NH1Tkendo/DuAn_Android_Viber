@@ -30,10 +30,19 @@ public class SearchScreenFrg extends Fragment {
     private SearchScreenBinding binding;
     private SongAdapter adapter;
     private final List<Song> song = new ArrayList<>();
+    private List<Song> songList = new ArrayList<>();
     private boolean isLoading = false;
-    private boolean isLastPage = false;
-    private String currentKeyword = "";
-    private BusinessLogic bs = new BusinessLogic();
+    private final BusinessLogic bs = new BusinessLogic();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            songList = (ArrayList<Song>) args.getSerializable("song_list");
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,6 +79,8 @@ public class SearchScreenFrg extends Fragment {
         });
     }
     private void performSearch(String keyword) {
+        boolean isLastPage = false;
+        String currentKeyword = "";
         if (keyword.isEmpty()) {
             adapter.setData(new ArrayList<>());
             isLastPage = false;
@@ -92,9 +103,10 @@ public class SearchScreenFrg extends Fragment {
 
     private void onSongClick(Song song) {
         if (song == null) return;
-
+        Collections.shuffle(songList);
+        ArrayList<Song> subListCopy = new ArrayList<>(songList.subList(0, 10));
         PlayerManage manager = PlayerManage.getInstance(requireContext());
-        //manager.setQueue(subListCopy);
+        manager.setQueue(subListCopy);
         manager.setCurrentSong(song);
         manager.setCurrentIndex(-1);
 

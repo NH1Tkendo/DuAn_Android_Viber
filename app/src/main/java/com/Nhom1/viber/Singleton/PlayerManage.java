@@ -117,6 +117,7 @@ public class PlayerManage {
                 }
             });
         }
+        bs.Increase(currentSong.getId());
     }
 
     public void playNext(Context context){
