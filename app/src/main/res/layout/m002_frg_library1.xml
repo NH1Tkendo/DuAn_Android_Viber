@@ -219,10 +219,10 @@
         android:layout_marginTop="8dp"/>
 
     <!-- Thanh phát nhạc -->
-    <include
-        android:id="@+id/playerBar"
-        layout="@layout/player_bar"
+    <FrameLayout
+        android:id="@+id/playerBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#EDE0C8"/>
+
 </LinearLayout>
