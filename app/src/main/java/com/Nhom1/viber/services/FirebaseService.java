@@ -1,12 +1,10 @@
 package com.Nhom1.viber.services;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.models.User;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
@@ -15,9 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FirebaseService {
     private final FirebaseFirestore db;
@@ -317,22 +313,5 @@ public class FirebaseService {
 
     public interface OnPlaylistsLoadedListener {
         void onPlaylistsLoaded(List<PlayList> playlists);
-    }
-    private void addPlaylistToExistingUser(String userEmail, String playlistName) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Tạo update cho field playlists.<playlistName>
-        Map<String, Object> update = new HashMap<>();
-        update.put("playlists." + playlistName, true); // lưu như object con
-
-        db.collection("users")
-                .document(userEmail)
-                .update(update)  // Chỉ cập nhật nếu user đã có
-                .addOnSuccessListener(unused -> {
-                    Log.d("Firestore", "Đã thêm playlist vào field playlists");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Lỗi khi thêm playlist", e);
-                });
     }
 }
