@@ -1,7 +1,6 @@
 package com.Nhom1.viber.Activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,21 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.Nhom1.viber.R;
-import com.Nhom1.viber.adapters.PlayListAdapter;
-import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.services.FirebaseService;
 import com.Nhom1.viber.Singleton.PlayerManage;
 import com.Nhom1.viber.utils.RecentManager;
 import com.Nhom1.viber.Activity.MiniPlayerFragment; // <-- Thêm dòng này
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +34,7 @@ public class M002Libraly1Frg extends Fragment {
     private List<Song> songList = new ArrayList<>();
     private CardView CVDowload;
     private TextView tvTitle, tvArtist;
-    private ImageView ivCover,CreatPlaylist;
-    private RecyclerView rvPlaylists;
-    private PlayListAdapter adapter;
-    private List<PlayList> playLists = new ArrayList<>();
+    private ImageView ivCover;
 
     @Nullable
     @Override
@@ -60,7 +49,6 @@ public class M002Libraly1Frg extends Fragment {
         CVDowload = view.findViewById(R.id.CVDowload);
         tvTitle = view.findViewById(R.id.tvSongTitle);
         tvArtist = view.findViewById(R.id.tvArtist);
-        CreatPlaylist=view.findViewById(R.id.CreatPlaylist);
 
         firebaseService = new FirebaseService();
 
@@ -70,12 +58,7 @@ public class M002Libraly1Frg extends Fragment {
             transaction.addToBackStack(null);
             transaction.commit();
         });
-        CreatPlaylist.setOnClickListener(v -> {
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_container, new CreatePlaylist());
-            transaction.addToBackStack(null);
-            transaction.commit();
-        });
+
         IbtnRandom.setOnClickListener(v -> {
             firebaseService.getSongs(songs -> {
                 if (songs != null && !songs.isEmpty()) {
@@ -127,38 +110,6 @@ public class M002Libraly1Frg extends Fragment {
                 }
             });
         });
-        rvPlaylists = view.findViewById(R.id.rvPlaylists);
-        rvPlaylists.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        adapter = new PlayListAdapter(playLists, new PlayListAdapter.OnPlayListClickListener() {
-            @Override
-            public void onPlayListClick(PlayList playList) {
-
-            }
-        });
-        rvPlaylists.setAdapter(adapter);
-        getParentFragmentManager().setFragmentResultListener(
-                "create_playlist_request",
-                getViewLifecycleOwner(),
-                (requestKey, bundle) -> {
-                    boolean created = bundle.getBoolean("playlist_created", false);
-                    if (created) {
-                        loadPlaylistsFromFirestore(); // Cập nhật danh sách playlist
-                    }
-                }
-        );
-        requireActivity().getSupportFragmentManager().setFragmentResultListener(
-                "create_playlist_request",
-                getViewLifecycleOwner(),
-                (requestKey, bundle) -> {
-                    boolean created = bundle.getBoolean("playlist_created", false);
-                    if (created) {
-                        loadPlaylistsFromFirestore(); // Load lại khi có playlist mới
-                    }
-                }
-        );
-        loadPlaylistsFromFirestore();
-
     }
 
     private void updatePlayerBar(Song song) {
@@ -177,22 +128,5 @@ public class M002Libraly1Frg extends Fragment {
                 .replace(R.id.playerBarContainer, miniPlayer)
                 .commitNow(); // commitNow để update kịp thời
         ((MiniPlayerFragment) miniPlayer).updatePlayer(requireContext());
-    }
-    private void loadPlaylistsFromFirestore() {
-        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(email)
-                .collection("playlists")
-                .get()
-                .addOnSuccessListener(query -> {
-                    playLists.clear();
-                    for (DocumentSnapshot doc : query.getDocuments()) {
-                        PlayList p = doc.toObject(PlayList.class);
-                        playLists.add(p);
-                    }
-                    adapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> Log.e("PlaylistLoad", "Lỗi load playlist", e));
     }
 }
