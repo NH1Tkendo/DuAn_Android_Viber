@@ -8,21 +8,25 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+
 import com.Nhom1.viber.R;
 import com.Nhom1.viber.Singleton.PlayerManage;
 import com.Nhom1.viber.databinding.FullPlayerBinding;
 import com.Nhom1.viber.models.Song;
+import com.Nhom1.viber.utils.ControlUI;
 import com.Nhom1.viber.utils.NavigateToFullPlayer;
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-
-public class FullPlayerFragment extends Fragment implements PlayerManage.PlayerUpdateListener {
+public class FullPlayerFragment extends Fragment {
     private FullPlayerBinding binding;
     private ExoPlayer player;
     private final Handler handler = new Handler();
@@ -64,7 +68,10 @@ public class FullPlayerFragment extends Fragment implements PlayerManage.PlayerU
             updateFullPlayer(requireContext());
         }
 
-        binding.imgReturn.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+        binding.imgReturn.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
+        //Đồng bộ seekbar với player
         binding.sbMusicTimeBar.setMax((int) player.getDuration() / 1000); // set tối đa = tổng thời lượng (giây)
         handler.post(updateSeekbar);
         binding.sbMusicTimeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -117,16 +124,6 @@ public class FullPlayerFragment extends Fragment implements PlayerManage.PlayerU
                 ((NavigateToFullPlayer) activity).openMusicQueue();
             }
         });
-        binding.btnRepeat.setOnClickListener(v -> {
-            if(manager.isRepeat()){
-                binding.btnRepeat.setImageResource(R.drawable.ic_repeat);
-                manager.setRepeat(false);
-            }
-            else{
-                binding.btnRepeat.setImageResource(R.drawable.ic_repeat_one);
-                manager.setRepeat(true);
-            }
-        });
     }
 
     @SuppressLint("DefaultLocale")
@@ -158,19 +155,12 @@ public class FullPlayerFragment extends Fragment implements PlayerManage.PlayerU
     public void onStart() {
         super.onStart();
         PlayerManage.getInstance(requireContext()).addListener(playerListener);
-        PlayerManage.getInstance(requireContext()).addUpdateListener(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         PlayerManage.getInstance(requireContext()).removeListener(playerListener);
-        PlayerManage.getInstance(requireContext()).removeUpdateListener(this);
-    }
-
-    @Override
-    public void updatePlayer() {
-        updateFullPlayer(requireContext());
     }
 
     @Override

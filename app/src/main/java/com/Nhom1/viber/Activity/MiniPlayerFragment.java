@@ -27,7 +27,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 
-public class MiniPlayerFragment extends Fragment implements PlayerManage.PlayerUpdateListener {
+public class MiniPlayerFragment extends Fragment {
     private ExoPlayer player;
     private PlayerBarBinding binding;
     private boolean isFavorite = false;
@@ -99,23 +99,17 @@ public class MiniPlayerFragment extends Fragment implements PlayerManage.PlayerU
     public void onStart() {
         super.onStart();
         PlayerManage.getInstance(requireContext()).addListener(playerListener);
-        PlayerManage.getInstance(requireContext()).addUpdateListener(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         PlayerManage.getInstance(requireContext()).removeListener(playerListener);
-        PlayerManage.getInstance(requireContext()).removeUpdateListener(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-    @Override
-    public void updatePlayer() {
-        updatePlayer(requireContext());
     }
 }
