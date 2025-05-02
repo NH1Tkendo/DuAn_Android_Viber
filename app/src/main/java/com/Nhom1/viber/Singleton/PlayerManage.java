@@ -18,10 +18,12 @@ public class PlayerManage {
     private ExoPlayer player;
     private Song currentSong;
     private boolean isPlaying = true;
+    private boolean isRepeat = false;
     private ArrayList<Song> queue;
     private BusinessLogic bs = new BusinessLogic();
     private int currentIndex = -1;
     private final List<Player.Listener> listeners = new ArrayList<>();
+    private final List<PlayerUpdateListener> updateListeners = new ArrayList<>();
 
     private PlayerManage(Context context) {
         player = new ExoPlayer.Builder(context).build();
@@ -32,6 +34,23 @@ public class PlayerManage {
                 for (Player.Listener listener : listeners) {
                     listener.onIsPlayingChanged(isPlaying);
                 }
+            }
+
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                if (state == Player.STATE_ENDED) {
+                    if(isRepeat){
+                        playCurrent(context);
+                    }
+                    else
+                        playNext(context);
+                }
+
+                for (Player.Listener listener : listeners) {
+                    listener.onPlaybackStateChanged(state);
+                }
+
+                notifyUpdatePlayer();
             }
         });
     }
@@ -73,6 +92,15 @@ public class PlayerManage {
         }
     }
 
+    public void addUpdateListener(PlayerUpdateListener listener) {
+        if (!updateListeners.contains(listener)) {
+            updateListeners.add(listener);
+        }
+    }
+
+    public void removeUpdateListener(PlayerUpdateListener listener) {
+        updateListeners.remove(listener);
+    }
     public void setCurrentIndex(int index) {
         this.currentIndex = index;
     }
@@ -85,6 +113,14 @@ public class PlayerManage {
 
     public void setQueue(ArrayList<Song> queue) {
         this.queue = queue;
+    }
+
+    public boolean isRepeat() {
+        return isRepeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        isRepeat = repeat;
     }
 
     public void play(Song song, Context context) {
@@ -138,5 +174,15 @@ public class PlayerManage {
         }
 
         playCurrent(context);
+    }
+
+    private void notifyUpdatePlayer() {
+        for (PlayerUpdateListener listener : updateListeners) {
+            listener.updatePlayer();
+        }
+    }
+
+    public interface PlayerUpdateListener {
+        void updatePlayer();
     }
 }
