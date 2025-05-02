@@ -184,7 +184,6 @@ public class M001MainFrg extends Fragment {
         FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
         if (playerBar != null) {
             playerBar.setVisibility(View.VISIBLE);
-
             // Xóa mini player cũ nếu có
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             MiniPlayerFragment currentFragment = (MiniPlayerFragment) fragmentManager.findFragmentById(R.id.playerBarContainer);

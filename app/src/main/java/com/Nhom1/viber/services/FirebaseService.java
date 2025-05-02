@@ -319,9 +319,6 @@ public class FirebaseService {
         void onPlaylistsLoaded(List<PlayList> playlists);
     }
     private void addPlaylistToExistingUser(String userEmail, String playlistName) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Tạo update cho field playlists.<playlistName>
         Map<String, Object> update = new HashMap<>();
         update.put("playlists." + playlistName, true); // lưu như object con
 
