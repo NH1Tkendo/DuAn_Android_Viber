@@ -22,6 +22,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
 
     public interface OnSongClickListener {
         void onSongClick(Song song);
+        void onSongMenuClick(Song song, View anchor);
     }
 
     public SongAdapter(List<Song> songList, OnSongClickListener listener) {
@@ -55,6 +56,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         }
 
         holder.itemView.setOnClickListener(v -> listener.onSongClick(song));
+        holder.menu.setOnClickListener(v -> listener.onSongMenuClick(song, v)); // 👈 thêm sự kiện menu
     }
 
     @Override
