@@ -4,18 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.Nhom1.viber.R;
 import com.Nhom1.viber.databinding.NavigationScreenBinding;
-import com.Nhom1.viber.utils.ControlUI;
-import com.Nhom1.viber.utils.NavigateToFullPlayer;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavigationScreen extends Fragment{
     private final Fragment m0001MainFrg = new M001MainFrg();
@@ -24,7 +18,6 @@ public class NavigationScreen extends Fragment{
     private final Fragment m0004UserFrg = new M004UserFrg();
     private Fragment activeFragment = m0001MainFrg;
     private NavigationScreenBinding binding;
-
 
     @Nullable
     @Override
