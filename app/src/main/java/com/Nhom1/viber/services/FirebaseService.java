@@ -314,18 +314,4 @@ public class FirebaseService {
     public interface OnPlaylistsLoadedListener {
         void onPlaylistsLoaded(List<PlayList> playlists);
     }
-    private void addPlaylistToExistingUser(String userEmail, String playlistName) {
-        Map<String, Object> update = new HashMap<>();
-        update.put("playlists." + playlistName, true); // lưu như object con
-
-        db.collection("users")
-                .document(userEmail)
-                .update(update)  // Chỉ cập nhật nếu user đã có
-                .addOnSuccessListener(unused -> {
-                    Log.d("Firestore", "Đã thêm playlist vào field playlists");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Lỗi khi thêm playlist", e);
-                });
-    }
 }

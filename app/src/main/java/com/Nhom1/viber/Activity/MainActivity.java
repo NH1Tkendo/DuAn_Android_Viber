@@ -1,22 +1,15 @@
 package com.Nhom1.viber.Activity;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import com.Nhom1.viber.R;
 import com.Nhom1.viber.utils.ControlUI;
 import com.Nhom1.viber.utils.NavigateToFullPlayer;
 
-
-public class MainActivity extends AppCompatActivity implements ControlUI,NavigateToFullPlayer {
-    public static final String SAVE_PREF = "save_pref";
+public class MainActivity extends AppCompatActivity implements ControlUI,NavigateToFullPlayer{
 
     @Override
     public void showPlayerUI() {
