@@ -116,7 +116,7 @@ public class M001MainFrg extends Fragment {
         );
 
         binding.recyclerView.setLayoutManager(songManager);
-        adapter = new SongAdapter(randomSongs, this::onSongClick);
+        adapter = new SongAdapter(randomSongs, false, this::onSongClick);
         binding.recyclerView.setAdapter(adapter);
 
         binding.rvArtistPlaylist.setLayoutManager(playListManager);

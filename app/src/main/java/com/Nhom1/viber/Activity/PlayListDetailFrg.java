@@ -65,7 +65,7 @@ public class PlayListDetailFrg extends Fragment {
                 .into(binding.imgCover);
 
         binding.rvSongHolder.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new SongAdapter(songList, this::onSongClick);
+        adapter = new SongAdapter(songList, false, this::onSongClick);
         binding.rvSongHolder.setAdapter(adapter);
 
         binding.imgReturn.setOnClickListener(v -> {
