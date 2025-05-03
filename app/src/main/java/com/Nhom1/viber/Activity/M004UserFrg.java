@@ -51,10 +51,9 @@ public class M004UserFrg extends Fragment {
         btnSetting.setOnClickListener(v -> {
             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
             transaction.replace(R.id.frame_container, new SettingFragment());
-            transaction.addToBackStack(null);
+            transaction.addToBackStack(null); // PHẢI CÓ DÒNG NÀY để nút quay lại hoạt động
             transaction.commit();
         });
-
         return view;
     }
 
