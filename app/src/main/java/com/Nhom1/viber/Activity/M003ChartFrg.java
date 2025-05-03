@@ -52,7 +52,7 @@ public class M003ChartFrg extends Fragment {
         loadSongs();
 
         binding.rvTopSongs.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new SongAdapter(songList, this::onSongClick);
+        adapter = new SongAdapter(songList, true, this::onSongClick);
         binding.rvTopSongs.setAdapter(adapter);
     }
 
