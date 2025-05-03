@@ -6,7 +6,7 @@ public class PlayList {
     private String name;
     private String cover;
     private List<String> songs;
-
+    private String Id;
     public PlayList(){
 
     }
@@ -39,5 +39,12 @@ public class PlayList {
 
     public void setSongs(List<String> songs) {
         this.songs = songs;
+    }
+    public String getPlaylistId() {
+        return Id;
+    }
+
+    public void setPlaylistId(String playlistId) {
+        this.Id = playlistId;
     }
 }

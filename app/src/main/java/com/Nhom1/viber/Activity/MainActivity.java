@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements ControlUI,Navigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         showFrg(new M000SplashFrg());
+
     }
     public void gotoRegisterScreen() {
         getSupportFragmentManager().beginTransaction().replace(R.id.ln_main, new
