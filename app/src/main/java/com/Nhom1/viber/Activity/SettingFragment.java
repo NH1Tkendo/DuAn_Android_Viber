@@ -31,23 +31,25 @@ public class SettingFragment extends Fragment {
 
         // Sự kiện quay lại
         btnBack.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().popBackStack(); // Quay lại Fragment trước
+            getParentFragmentManager().popBackStack(); // Quay lại Fragment trước
         });
 
         // Sự kiện mở Cài đặt tài khoản
         tvAccountSetting.setOnClickListener(v -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_container, new AccountSettingFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            AccountSettingFragment fragment = new AccountSettingFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.frame_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
         // Sự kiện mở Cài đặt thông báo
         tvNotificationSetting.setOnClickListener(v -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_container, new NotificationSettingFragment());
-            transaction.addToBackStack(null);
-            transaction.commit();
+            NotificationSettingFragment fragment = new NotificationSettingFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.frame_container, fragment)
+                    .addToBackStack(null)
+                    .commit();;
         });
 
         return view;
