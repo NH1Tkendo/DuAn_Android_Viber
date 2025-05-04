@@ -17,6 +17,8 @@ import com.Nhom1.viber.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
+
 public class M004UserFrg extends Fragment {
     FirebaseAuth mAuth;
     private Button btnLogout, btnSetting;
@@ -49,10 +51,11 @@ public class M004UserFrg extends Fragment {
 
         // Sự kiện mở Cài đặt
         btnSetting.setOnClickListener(v -> {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_container, new SettingFragment());
-            transaction.addToBackStack(null); // PHẢI CÓ DÒNG NÀY để nút quay lại hoạt động
-            transaction.commit();
+            SettingFragment fragment = new SettingFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.frame_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
         return view;
     }

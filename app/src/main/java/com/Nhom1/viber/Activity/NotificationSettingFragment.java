@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -14,13 +15,13 @@ import androidx.fragment.app.Fragment;
 import com.Nhom1.viber.R;
 
 public class NotificationSettingFragment extends Fragment {
-
+    private ImageView BtnBack;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notification_setting, container, false);
-
+        initView(view);
         Switch notificationSwitch = view.findViewById(R.id.switch_notification);
         notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -32,6 +33,12 @@ public class NotificationSettingFragment extends Fragment {
             }
         });
 
+        BtnBack.setOnClickListener(v -> {
+            getParentFragmentManager().popBackStack();
+        });
         return view;
+    }
+    private void initView(View view) {
+        BtnBack = view.findViewById(R.id.btn_back);
     }
 }

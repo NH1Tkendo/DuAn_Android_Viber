@@ -25,7 +25,7 @@ public class AccountSettingFragment extends Fragment {
 
         // Xử lý nút quay lại
         btnBack.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().popBackStack();
+            getParentFragmentManager().popBackStack();
         });
 
         return view;
