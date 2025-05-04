@@ -8,6 +8,8 @@
     android:padding="20dp">
 
     <!-- Top Banner -->
+
+    <!-- Input Fields -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="250dp"
@@ -18,9 +20,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
+            android:contentDescription="@drawable/ic_back"
             android:padding="10dp"
             android:src="@drawable/ic_back"
-            android:contentDescription="@drawable/ic_back"
             app:tint="#FFFFFF" />
 
         <TextView
@@ -33,7 +35,6 @@
             android:textStyle="bold" />
     </FrameLayout>
 
-    <!-- Input Fields -->
     <EditText
         android:id="@+id/edt_email"
         android:layout_width="match_parent"
