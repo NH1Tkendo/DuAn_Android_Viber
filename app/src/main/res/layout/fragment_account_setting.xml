@@ -57,14 +57,6 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_profile" />
 
-            <Button
-                android:id="@+id/btnEditProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chỉnh sửa"
-                android:textColor="#FFFFFF"
-                android:backgroundTint="#1976D2"
-                android:layout_marginStart="16dp" />
         </LinearLayout>
 
         <!-- Thông tin chi tiết tài khoản -->
