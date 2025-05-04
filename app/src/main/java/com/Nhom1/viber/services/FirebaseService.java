@@ -6,6 +6,8 @@ import android.widget.Toast;
 import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.models.User;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FirebaseService {
     private final FirebaseFirestore db;
@@ -183,6 +186,7 @@ public class FirebaseService {
     public void loadPlayListDetails(List<String> songIds, OnSongsLoadedListener listener){
         List<List<String>> partitions = partitionList(songIds, 10);
         List<Song> allSongs = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0); // Dùng để đếm số partition xong
 
         for (List<String> partition : partitions) {
             db.collection("songs")
@@ -203,8 +207,9 @@ public class FirebaseService {
 
                             allSongs.add(song);
                         }
-                        // Nếu đã lấy hết tất cả partition
-                        if (allSongs.size() == songIds.size()) {
+
+                        // Kiểm tra xem đã xong hết chưa
+                        if (completedCount.incrementAndGet() == partitions.size()) {
                             listener.onSongsLoaded(allSongs);
                         }
                     })
@@ -334,5 +339,90 @@ public class FirebaseService {
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Lỗi khi thêm playlist", e);
                 });
+    }
+    public interface ISongFetchListener {
+        void onSongsFetched(List<Song> songs);
+    }
+    public static void getSongsByIds(List<String> ids, ISongFetchListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<Song> songs = new ArrayList<>();
+
+        if (ids.isEmpty()) {
+            listener.onSongsFetched(songs);
+            return;
+        }
+
+        AtomicInteger completedCount = new AtomicInteger(0);
+
+        for (String id : ids) {
+            db.collection("songs")
+                    .document(id)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Song song = documentSnapshot.toObject(Song.class);
+                            if (song != null) {
+                                song.setId(documentSnapshot.getId());
+                                synchronized (songs) {
+                                    songs.add(song);
+                                }
+                            }
+                        }
+                        if (completedCount.incrementAndGet() == ids.size()) {
+                            listener.onSongsFetched(songs);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Lỗi khi lấy bài hát", e);
+                        if (completedCount.incrementAndGet() == ids.size()) {
+                            listener.onSongsFetched(songs);
+                        }
+                    });
+        }
+    }
+    public interface OnSongLoadedListener {
+        void onSongLoaded(Song song);
+    }
+    public void getPlaylistSongs(String userEmail, String playlistId, OnSongsLoadedListener listener) {
+        Log.d("FIREBASE_DEBUG", "Bắt đầu truy vấn Firestore...");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users")
+                .document(userEmail)
+                .collection("playlists")
+                .document(playlistId)
+                .collection("songs")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d("FIREBASE_DEBUG", "Tổng số documents: " + queryDocumentSnapshots.size());
+                    List<String> songIds = new ArrayList<>();
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                        // Đây là document con: users/.../songs/{autoId}
+                        // Và nó chứa field songId = "id thực sự của bài hát"
+                        String songId = doc.getString("songId");
+                        Log.d("FIREBASE_DEBUG", "Song document ID: " + doc.getId() + ", songId = " + songId);
+                        if (songId != null && !songId.isEmpty()) {
+                            songIds.add(songId);
+                        }
+                    }
+
+                    // Gọi hàm có sẵn để lấy chi tiết bài hát
+                   getSongsByIds(songIds, new ISongFetchListener() {
+                        @Override
+                        public void onSongsFetched(List<Song> songs) {
+                            listener.onSongsLoaded(songs); // map lại sang listener cũ
+                        }
+                    });
+                })
+                .addOnFailureListener(queryDocumentSnapshots-> {
+                    Log.d("FIREBASE_DEBUG", "Tổng số documents: " + queryDocumentSnapshots.getMessage());
+                    listener.onSongsLoaded(new ArrayList<>()); // Trả về danh sách rỗng nếu lỗi
+                });
+    }
+    public class PlaylistBusiness {
+        public  void getSongsOfPlaylist(List<String> songIds, ISongFetchListener listener) {
+            FirebaseService.getSongsByIds(songIds, listener);
+        }
     }
 }

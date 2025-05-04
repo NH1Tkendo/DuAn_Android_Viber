@@ -24,6 +24,7 @@ import com.Nhom1.viber.models.PlayList;
 import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.services.FirebaseService;
 import com.Nhom1.viber.Singleton.PlayerManage;
+import com.Nhom1.viber.utils.BusinessLogic;
 import com.Nhom1.viber.utils.RecentManager;
 import com.Nhom1.viber.Activity.MiniPlayerFragment; // <-- Thêm dòng này
 import com.bumptech.glide.Glide;
@@ -133,7 +134,42 @@ public class M002Libraly1Frg extends Fragment {
         adapter = new PlayListAdapter(playLists, new PlayListAdapter.OnPlayListClickListener() {
             @Override
             public void onPlayListClick(PlayList playList) {
+                String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                String playlistId = playList.getPlaylistId();
 
+                FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(userEmail)
+                        .collection("playlists")
+                        .document(playlistId)
+                        .collection("songs")
+                        .get()
+                        .addOnSuccessListener(query -> {
+                            List<String> songIds = new ArrayList<>();
+                            for (DocumentSnapshot doc : query.getDocuments()) {
+                                songIds.add(doc.getString("songId"));
+                            }
+
+                            if (songIds.isEmpty()) {
+                                Toast.makeText(getContext(), "Playlist này chưa có bài hát nào", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Dùng BusinessLogic để lấy chi tiết bài hát
+                            Fragment fragment = PlayListDetailFrg.newInstanceFromFirestore(
+                                    FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                    playList.getPlaylistId(),
+                                    playList.getCover()
+                            );
+                            requireActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.frame_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getContext(), "Không thể tải bài hát trong playlist", Toast.LENGTH_SHORT).show();
+                        });
             }
         });
         rvPlaylists.setAdapter(adapter);
@@ -189,10 +225,12 @@ public class M002Libraly1Frg extends Fragment {
                     playLists.clear();
                     for (DocumentSnapshot doc : query.getDocuments()) {
                         PlayList p = doc.toObject(PlayList.class);
-                        playLists.add(p);
+                        if (p != null) {
+                            p.setPlaylistId(doc.getId()); // <-- BỔ SUNG DÒNG NÀY để gán ID từ Firestore
+                            playLists.add(p);
+                        }
                     }
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> Log.e("PlaylistLoad", "Lỗi load playlist", e));
-    }
-}
+    }}

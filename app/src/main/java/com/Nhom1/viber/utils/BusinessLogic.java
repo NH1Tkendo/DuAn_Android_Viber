@@ -1,5 +1,6 @@
 package com.Nhom1.viber.utils;
 
+import com.Nhom1.viber.models.Song;
 import com.Nhom1.viber.services.FirebaseService;
 
 import java.util.List;
@@ -51,4 +52,12 @@ public class BusinessLogic {
     public void GetDataSet(int limit, FirebaseService.OnSongsLoadedListener listener){
         firebaseService.getTopSongs(limit, listener);
     }
+    public void GetPlaylistSongs(String userEmail, String playlistId, FirebaseService.OnSongsLoadedListener listener) {
+        firebaseService.getPlaylistSongs(userEmail, playlistId, listener);
+
+    }
+    public interface OnGetSongsListener {
+        void onSongsReceived(List<Song> songs);
+    }
+
 }

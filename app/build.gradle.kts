@@ -58,6 +58,7 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("androidx.lifecycle:lifecycle-service:2.6.2")
+    implementation ("com.google.firebase:firebase-auth:22.3.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
