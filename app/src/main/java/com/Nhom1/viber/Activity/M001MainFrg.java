@@ -116,7 +116,7 @@ public class M001MainFrg extends Fragment {
         );
 
         binding.recyclerView.setLayoutManager(songManager);
-        adapter = new SongAdapter(randomSongs, this::onSongClick);
+        adapter = new SongAdapter(randomSongs, false, this::onSongClick);
         binding.recyclerView.setAdapter(adapter);
 
         binding.rvArtistPlaylist.setLayoutManager(playListManager);
@@ -179,13 +179,12 @@ public class M001MainFrg extends Fragment {
         PlayerManage manager = PlayerManage.getInstance(requireContext());
         manager.setQueue(subListCopy);
         manager.setCurrentSong(song);
-        manager.setCurrentIndex(-1);
+        manager.setCurrentIndex(subListCopy.indexOf(song));
 
         FrameLayout playerBar = requireActivity().findViewById(R.id.playerBarContainer);
         if (playerBar != null) {
             playerBar.setVisibility(View.VISIBLE);
 
-            // Xóa mini player cũ nếu có
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             MiniPlayerFragment currentFragment = (MiniPlayerFragment) fragmentManager.findFragmentById(R.id.playerBarContainer);
             if (currentFragment != null) {
@@ -205,6 +204,7 @@ public class M001MainFrg extends Fragment {
             manager.playCurrent(requireContext());
         }
     }
+
 
     //=============================================
     //=============Xử lý giao diện =================

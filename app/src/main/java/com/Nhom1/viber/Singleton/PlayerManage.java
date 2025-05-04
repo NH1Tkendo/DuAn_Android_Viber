@@ -105,6 +105,10 @@ public class PlayerManage {
         this.currentIndex = index;
     }
 
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
     public void removeListener(Player.Listener listener) {
         if (player != null) {
             player.removeListener(listener);

@@ -105,7 +105,7 @@ public class PlayListDetailFrg extends Fragment {
 
         // Thiết lập RecyclerView
         binding.rvSongHolder.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new SongAdapter(songList, this::onSongClick);
+        adapter = new SongAdapter(songList, false, this::onSongClick);
         binding.rvSongHolder.setAdapter(adapter);
 
         // Nút quay lại

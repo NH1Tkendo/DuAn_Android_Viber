@@ -29,6 +29,42 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Hint Block -->
+    <LinearLayout
+        android:id="@+id/layoutSearchHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/searchInput"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.4">
+
+        <TextView
+            android:id="@+id/tvMainHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phát nội dung bạn yêu thích"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tvSubHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tìm kiếm bài hát"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp"
+            android:gravity="center" />
+    </LinearLayout>
+
+
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSongs"
@@ -36,9 +72,12 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingTop="8dp"
+        android:visibility="gone"
         android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/searchInput"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

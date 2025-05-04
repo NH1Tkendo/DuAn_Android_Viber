@@ -2,6 +2,7 @@ package com.Nhom1.viber.Activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 
-public class MiniPlayerFragment extends Fragment implements PlayerManage.PlayerUpdateListener {
+public class MiniPlayerFragment extends Fragment implements PlayerManage.PlayerUpdateListener{
     private ExoPlayer player;
     private PlayerBarBinding binding;
     private boolean isFavorite = false;
@@ -64,11 +65,11 @@ public class MiniPlayerFragment extends Fragment implements PlayerManage.PlayerU
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = PlayerBarBinding.inflate(inflater, container, false);
         PlayerManage manager = PlayerManage.getInstance(requireContext());
-
         binding.btnFavorite.setOnClickListener(v -> {
             isFavorite = !isFavorite;
             binding.btnFavorite.setImageResource(isFavorite ? R.drawable.ic_fullfavorite : R.drawable.ic_favorite);
         });
+
 
         binding.btnPlayPause.setOnClickListener(v -> {
             if (player == null) return;

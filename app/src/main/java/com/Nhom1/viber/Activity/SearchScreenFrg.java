@@ -1,6 +1,5 @@
 package com.Nhom1.viber.Activity;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -57,7 +56,7 @@ public class SearchScreenFrg extends Fragment {
         });
 
         binding.recyclerSongs.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new SongAdapter(song, this::onSongClick);
+        adapter = new SongAdapter(song, false, this::onSongClick);
         binding.recyclerSongs.setAdapter(adapter);
 
         binding.searchInput.addTextChangedListener(new TextWatcher() {
@@ -77,6 +76,31 @@ public class SearchScreenFrg extends Fragment {
                 // Không cần xử lý
             }
         });
+
+        binding.searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty()) {
+                    binding.layoutSearchHint.setVisibility(View.VISIBLE);
+                    binding.recyclerSongs.setVisibility(View.GONE);
+                } else {
+                    binding.layoutSearchHint.setVisibility(View.GONE);
+                    binding.recyclerSongs.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+            // override các method còn lại nếu cần
+        });
+
     }
     private void performSearch(String keyword) {
         boolean isLastPage = false;
